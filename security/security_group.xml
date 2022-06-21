@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data noupdate="0">
+
+
+    <record model="ir.module.category" id="auditor_sat_category">
+        <field name="name">SAT</field>
+        <field name="description">Auditoria de Descarga y Funcionalidades Fiscales</field>
+        <field name="sequence">100</field>
+    </record>
+
+
+    <record id="security_group_access_download_sat" model="res.groups">
+        <field name="name">Gestion Descargas Masivas SAT</field>
+        <field name="category_id" ref="auditor_sat_category"/>
+        <field name="comment">Los Usuarios de este Grupo podran realizar la descarga masiva de Documentos XML.</field>
+
+    </record>
+
+</data>
+</openerp>

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+cfdi_account_dashboard_manager,cfdi.account.dashboard.manager,model_cfdi_account_dashboard_manager,account.group_account_manager,1,1,1,1
+cfdi_account_cfdi_multi_download_manager,account.cfdi.multi.download,model_account_cfdi_multi_download,account.group_account_manager,1,1,1,1
+access_facturae_certificate_library,access_facturae_certificate_library,model_facturae_certificate_library,base.group_user,1,1,1,1

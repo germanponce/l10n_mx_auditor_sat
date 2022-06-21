@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+<record id="cfdi_account_dashboard_manager_kanban" model="ir.ui.view">
+  <field name="name">cfdi.account.dashboard.manager.view</field>
+  <field name="model">cfdi.account.dashboard.manager</field>
+   <field name="arch" type="xml">
+            <kanban class="oe_background_grey o_kanban_dashboard o_project_kanban o_emphasize_colors" on_create="project.open_create_project">
+                <field name="color"/>
+                <field name="name"/>
+                <field name="date"/>
+                <field name="periodo"/>
+                <field name="user_id"/>
+                <field name="number_of_documents"/>
+                <field name="number_of_invoices"/>
+                <field name="number_of_nc_invoices"/>
+                <field name="number_of_supplier_inv"/>
+                <field name="number_of_nc_supplier_inv"/>
+                <field name="number_of_payments"/>
+                <field name="download_type"/>
+                <field name="id_solicitud"/>
+                <field name="status_solicitud" />
+                <field name="download_pending" />
+                <field name="no_data" />
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="#{kanban_color(record.color.raw_value)} oe_kanban_global_click o_has_icon">
+                                
+                            <div class="o_project_kanban_main wk_o_project_kanban_main">
+                            <div class="o_kanban_card_content o_visible oe_kanban_global_click" style="display:block">
+                                <div class="o_kanban_primary_left">
+                                  <div class="o_primary">
+                                    <center>
+                                    <span style="font-size:18px;"> <t t-esc="record.name.value"/></span>
+                                      <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <strong class="o_kanban_record_title"><span>Total  <t t-esc="record.number_of_documents.value"/> XML Descargados</span></strong>
+                                            </div>
+                                        </div>
+                                        <div class="row mt8">
+                                            
+                                        </div>
+                                    </div>
+                            </center>
+                            <div class="o_kanban_card_manage_pane dropdown-menu" groups="l10n_mx_auditor_sat.security_group_access_download_sat" role="menu">
+                                <div class="o_kanban_card_manage_section o_kanban_manage_reports">
+                                    <div role="menuitem">
+                                        <a name="116" type="action">Share</a>
+                                    </div>
+                                    <div role="menuitem">
+                                        <a type="edit">Edit</a>
+                                    </div>
+                                    
+                                </div>
+                                <div role="menuitem" aria-haspopup="true" class="o_no_padding_kanban_colorpicker">
+                                    <ul class="oe_kanban_colorpicker" data-field="color" role="popup"/>
+                                </div>
+                            </div>
+                            <a class="o_kanban_manage_toggle_button o_left" href="#" groups="l10n_mx_auditor_sat.security_group_access_download_sat"><i class="fa fa-ellipsis-v" role="img" aria-label="Manage" title="Manage"/></a>
+                            <span class="o_right"><field name="is_favorite" widget="boolean_favorite" nolabel="1" force_save="1"/></span>
+                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <strong class="o_kanban_record_title"><span>Fecha Consulta: <t t-esc="record.date.value"/></span></strong>
+                                        <strong class="o_kanban_record_subtitle float-right"><span class="text-right">Periodo: <t t-esc="record.periodo.value"/></span></strong>
+                                    </div>
+                                </div>
+                                <div class="row mt8">
+                                    <div class="col-6 ">
+                                        <span>Facturas Cliente: <t t-esc="record.number_of_invoices.value"/></span>
+                                    </div>
+                                    <div class="col-6">
+                                        <span>Facturas Proveedor: <t t-esc="record.number_of_supplier_inv.value"/></span>
+                                    </div>
+                                </div>
+                                <div class="row mt8">
+                                    <div class="col-6 ">
+                                        <span>Notas Credito: <t t-esc="record.number_of_nc_invoices.value"/></span>
+                                    </div>
+                                    <div class="col-6">
+                                        <span>Notas Credito: <t t-esc="record.number_of_nc_supplier_inv.value"/></span>
+                                    </div>
+                                </div>
+                                <div class="row mt8">
+                                    <div class="col-6 ">
+                                        <span>Pagos Emitidos: <t t-esc="record.number_of_payments.value"/></span>
+                                    </div>
+                                    <div class="col-6">
+                                    </div>
+                                </div>
+                                <div class="row mt8">
+                                    <div class="col-6">
+                                        <span>ID solicitud: </span>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="float-right text-right">
+                                            <t t-esc="record.id_solicitud.value"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="row mt8">
+                                    <div class="col-6">
+                                        <span>Estatus: </span>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="float-right text-right">
+                                            <t t-esc="record.status_solicitud.value"/>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="row mt8">
+                                    <div class="col-6">
+                                        <span>Tipo Documentos: </span>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="float-right text-right">
+                                            <t t-esc="record.download_type.value"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="row mt8">
+                                    <div class="col-6 text-muted">
+                                        <span>Usuario Solicito: </span>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="float-right text-right">
+                                            <t t-esc="record.user_id.value"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                <center>
+                                    <button type="object"  name="action_download">Descargar ZIP</button>
+                                </center>
+
+
+                            </div>
+
+                             </div>
+                           </div>
+                        </div>
+                        </div>
+
+                            </div>
+
+                        </t>
+                    </templates>
+        </kanban>
+    </field>
+</record>
+
+
+<record id="cfdi_account_dashboard_manager_form" model="ir.ui.view">
+  <field name="name">cfdi.account.dashboard.manager.view</field>
+  <field name="model">cfdi.account.dashboard.manager</field>
+     <field name="arch" type="xml">
+           <form string="Tablero de Control" create="false" delete="false">
+            <header>
+                <button name="action_download" type="object" string="Descargar ZIP" icon="fa-download"/>
+            </header>
+              <sheet>
+                <field name="is_favorite" widget="boolean_favorite" nolabel="1" force_save="1"/>
+                <div class="oe_title">
+                        <label for="id_solicitud" />
+                        <h1>
+                            <field name="id_solicitud" readonly="1"/>
+                        </h1>
+                    </div>
+                <group>
+                    <group>
+                        <field name="status_solicitud" readonly="1" />
+                    </group>
+                    <group>
+                        <field name="download_pending" readonly="1"/>
+                        <field name="no_data" invisible="1"/>
+                    </group>
+                </group>
+                <group>
+                    <group>
+                        <field name="date" readonly="1"/>
+                        <field name="date_start" readonly="1"/>
+                        <field name="user_id" readonly="1"/>
+                        <field name="number_of_documents" readonly="1"/>
+                        <field name="number_of_invoices" readonly="1"/>
+                        <field name="number_of_nc_invoices" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="name" readonly="1"/>
+                        <field name="date_stop" readonly="1"/>
+                        <field name="color" invisible="1"/>
+                        <field name="number_of_supplier_inv" readonly="1"/>
+                        <field name="number_of_nc_supplier_inv" readonly="1"/>
+                        <field name="number_of_payments" readonly="1"/>
+
+                    </group>
+                </group>
+                <group name="periodos_zip">
+                    <group name="periodo_type">
+                        
+                        <field name="periodo" readonly="1"/>
+                        <field name="download_type" readonly="1"/>
+                    </group>
+                    <group name="zip">
+                        <field name="download_file" invisible="1"/>
+                        <field name="datas_fname" invisible="1"/>
+                        <field name="file" readonly="1" filename="datas_fname" attrs="{'invisible':[('download_file','=',False)]}"/>
+                    </group>
+                    
+                </group>
+                <group name="package_pendings">
+                    <field name="package_pending" readonly="1" attrs="{'invisible':[('download_pending','=',False)]}"/>
+                </group>
+                 <p><strong>Nota: </strong>Los datos como # Facturas C., # Notas C., # Facturas P. y # Pagos, estan relacionados con documentos con informacion fiscal generados dentro del Sistema Odoo, sin contar los documentos cancelados.</p>
+              </sheet>
+              <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+          </form>
+     </field>
+ </record>
+
+<record id="cfdi_account_dashboard_manager_tree" model="ir.ui.view">
+    <field name="name">cfdi.account.dashboard.manager.view</field>
+    <field name="model">cfdi.account.dashboard.manager</field>
+    <field name="arch" type="xml">
+        <tree string="Tablero de Control Descargas" create="false" delete="false">
+            <field name="sequence" />
+            <field name="date" />
+            <field name="user_id" />
+            <field name="name" />
+            <field name="number_of_documents" />
+            <field name="periodo"/>
+            <field name="download_type"/>
+            <field name="id_solicitud"/>
+            <field name="download_pending" />
+            <field name="status_solicitud" readonly="1"/>
+
+        </tree>
+    </field>
+</record>
+
+
+<record id="cfdi_account_dashboard_manager_search" model="ir.ui.view">
+    <field name="name">cfdi.account.dashboard.manager.view</field>
+    <field name="model">cfdi.account.dashboard.manager</field>
+    <field name="arch" type="xml">
+        <search string="Descargas de CFDI">
+            <field name="name" filter_domain="[('name','ilike',self)]" string="Referencia de Descarga"/>
+            <field name="status_solicitud" />
+            <field name="id_solicitud" />
+            <field name="package_pending" />
+            <field name="date" />
+            <field name="date_start" />
+            <field name="date_stop" />
+            <field name="periodo" />
+            <separator/>
+            <filter string="Pendientes de Descarga" name="download_pending" domain="[('download_pending','=',True)]"/>
+            <filter string="No Pendientes de Descarga" name="download_pending" domain="[('download_pending','=',False)]"/>
+            <filter string="Sin Informacion en el SAT" name="no_data" domain="[('no_data','=',True)]"/>
+            <filter string="Con Informacion en el SAT" name="no_data" domain="[('no_data','=',False)]"/>
+            <filter string="Error en la Descarga del Paquete" name="download_pending" domain="[('download_pending','=',True)]"/>
+            <filter string="Sin Descargas Pendientes" name="download_pending" domain="[('download_pending','=',False)]"/>
+            <group expand="1" string="Agrupar por">
+                <filter name="status_solicitud" context="{'group_by' : 'status_solicitud'}" string="Estado Solicitud"/>
+                <filter name="download_type" context="{'group_by' : 'download_type'}" string="Tipo Descarga"/>
+                <filter name="download_type" context="{'group_by' : 'download_type'}" string="Tipo Descarga"/>
+                <filter name="user_id" context="{'group_by' : 'user_id'}" string="Usuario"/>
+                <filter name="periodo" context="{'group_by' : 'periodo'}" string="Periodo"/>
+                <filter name="no_data" context="{'group_by' : 'no_data'}" string="Informacion Encontrada"/>
+            </group>
+       </search>
+    </field>
+</record>
+
+
+<record id="cfdi_account_dashboard_manager_action" model="ir.actions.act_window">
+    <field name="name">Dashboard Descarga XML</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">cfdi.account.dashboard.manager</field>
+    <field name="view_mode">kanban,tree,form</field>
+    <field name="limit">9</field>
+    <field name="view_id" ref="cfdi_account_dashboard_manager_kanban"/>
+</record>
+
+<!--============================================MENU========================================-->
+
+<menuitem name="Auditoria SAT" id="account_cfdi_auditor_root" web_icon="l10n_mx_auditor_sat,static/description/icon.png" sequence="40" groups="l10n_mx_auditor_sat.security_group_access_download_sat" />
+
+<menuitem id="cfdi_account_dashboard_manager_menu" parent= "account_cfdi_auditor_root" sequence= "1" name= "Tablero Historico" action="cfdi_account_dashboard_manager_action"/>
+
+
+
+
+            <!-- <menuitem action="account_cfdi_multi_download_action" id="account_cfdi_auditor_descarga"  parent="account_cfdi_auditor_root_download" sequence="1" /> -->
+
+
+</data>
+</openerp>

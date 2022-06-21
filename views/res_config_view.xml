@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_account_auditor_descarga_sat_fiel_conf" model="ir.ui.view">
+            <field name="name">res config settings descarga sat</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[hasclass('settings')]" position="inside">
+                    <div class="app_settings_block" data-string="Auditor SAT" string="Auditor SAT" data-key="l10n_mx_auditor_sat" 
+                         name="l10n_mx_auditor_sat" groups="account.group_account_manager">
+                        <h2>Configuracion Descarga Masiva SAT</h2>
+                        <div class="row mt16 o_settings_container" name="descarga_xmls">
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_left_pane"/>
+                                <div class="o_setting_right_pane" id="fiel_panel">
+                                    <span class="o_form_label">Firma Electrónica (FIEL)</span>
+                                    <div class="text-muted">
+                                        Seleccione los Archivos Electronicos de su Firma Electronica
+                                    </div>
+                                    <div class="content-group" id="fiel_data">
+                                        <div class="row mt16">
+                                            <label for="certificate_file" class="col-lg-3 o_light_label"/>
+                                            <field name="certificate_file" />
+                                            <label for="certificate_key_file" class="col-lg-3 o_light_label"/>
+                                            <field name="certificate_key_file" />
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <div class="content-group" id="fiel_password">
+                                        <div class="row mt16">
+                                            <label for="certificate_password" class="col-lg-3 o_light_label"/>
+                                            <field name="certificate_password"  password="1"/>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_left_pane" />
+                                <div class="o_setting_right_pane" groups="base.group_no_one">
+                                    <label for="certificate_file_pem"/>
+                                    <div class="text-muted">
+                                        <field name="certificate_file_pem" />
+                                    </div>
+                                    <br/>
+                                    <label for="certificate_key_file_pem"/>
+                                    <div class="text-muted">
+                                        <field name="certificate_key_file_pem" />
+                                    </div>
+                                    <br/>
+                                    <label for="certificate_pfx_file"/>
+                                    <div class="text-muted">
+                                        <field name="certificate_pfx_file" />
+                                    </div>
+                                </div>
+                                <div class="o_setting_right_pane" >
+                                    <div class="text-muted">
+                                        No. Serie y Vigencia
+                                    </div>
+                                    <label for="fiel_serial_number" string="No. Serie"/>
+                                    <field name="fiel_serial_number" /><br/>
+                                    
+                                    <label for="fiel_date_start" string="Vigencia"/>
+                                    <div>
+                                        <field name="fiel_date_start" class="oe_inline"/> - <field name="fiel_date_end" class="oe_inline"/>
+                                    </div>
+                                </div>                           
+                            </div>
+                            
+                            <div class="col-12 col-lg-6 o_setting_box">
+                                <div class="o_setting_left_pane">
+                                    <field name="download_automatically"/>
+                                </div>
+                                <div class="o_setting_right_pane" >
+                                    <span class="o_form_label">Planificar de Descargas</span>
+                                    <div class="content-group" id="download_automatically">
+                                        <div class="text-muted">
+                                            Permite consultar los paquetes pendientes de forma automatica, se puede programar el tiempo de ejecucion
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
