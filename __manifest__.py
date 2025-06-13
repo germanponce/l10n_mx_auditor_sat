@@ -13,16 +13,17 @@ Con este módulo puede realizar lo siguiente:
 * Se revisa de manera periódica para ver si el archivo ZIP ya se encuentra disponible en el portal del SAT y se hace la descarga    
     """,
     "website" : "http://www.argil.mx",
-    "license" : "AGPL-3",
+    "license"   : "Other proprietary",
     "depends" : [
-                    "account",
+                    "account_accountant",
                     'base_setup', 
                     'product', 
-                    'portal', 
-                    "l10n_mx_einvoice",
+                    #'portal', 
+                    "l10n_mx_edi",
+                    "account_cfdi_audit_odoo",
                 ],
     "external_dependencies": {
-                    "python" : ["cfdiclient", "suds-jurko"]
+                    "python" : ["cfdiclient"]
                     },
     "init_xml" : [],
     "demo_xml" : [],
@@ -30,9 +31,9 @@ Con este módulo puede realizar lo siguiente:
                     'security/security_group.xml',
                     'security/ir.model.access.csv',
                     'data/data_cron.xml',
-                    'views/res_config_view.xml',
                     'views/dashboard.xml',
                     'views/account.xml',
+                    'views/res_config_view.xml',
                     ],
     "installable" : True,
 }
