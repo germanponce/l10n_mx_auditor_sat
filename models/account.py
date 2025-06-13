@@ -777,6 +777,18 @@ class AccountCFDIMultiDownload(models.TransientModel):
                 if codigo_estado_solicitud != '5000':
                     _logger.info('\n La Solicitud aun no esta lista( %s ).....' % rec.name)
                 else:
+                    #### Cambios 2025 ######
+                    # Interpretar estado para logging
+                    estados_map = {
+                                        '0': 'Token inválido',
+                                        '1': 'Aceptada',
+                                        '2': 'En proceso', 
+                                        '3': 'Terminada',
+                                        '4': 'Error',
+                                        '5': 'Rechazada',
+                                        '6': 'Vencida'
+                                    }
+                    # ---- #
                     if estado_solicitud == '3':
                         download_pending = False # Si fue Aceptada entonces no esta pendiente de Aprobarse
                         numero_cfdis = data_solicitud_check['numero_cfdis']
@@ -821,6 +833,30 @@ class AccountCFDIMultiDownload(models.TransientModel):
                             _logger.info('\n################ Solicitud Aceptada, pero aun no lista para Descarga ( %s ).....' % rec.name)
                             status_solicitud = status_solicitud+", SAT - preparando archivo."
                             no_data = True
+                            
+                        #### Cambios 2025 ######
+                        elif estado_solicitud == '4':
+                                download_pending = True
+                                numero_cfdis = 0.0
+                                number_of_documents = numero_cfdis ### Total Descargado en el SAT
+                                _logger.info('\n################ Solicitud con Errores, ya no se podra descarga. Crea una nueva solicitud pero cambia el periodo (fechas) de la misma ( %s ).....' % rec.name)
+                                status_solicitud = status_solicitud+", SAT - preparando archivo."
+                                no_data = True
+                        elif estado_solicitud == '5':
+                                download_pending = True
+                                numero_cfdis = 0.0
+                                number_of_documents = numero_cfdis ### Total Descargado en el SAT
+                                _logger.info('\n################ Solicitud Rechazada, ya no se podra descarga. Crea una nueva solicitud pero cambia el periodo (fechas) de la misma ( %s ).....' % rec.name)
+                                status_solicitud = status_solicitud+", SAT - preparando archivo."
+                                no_data = True
+                        elif estado_solicitud == '6':
+                                download_pending = True
+                                numero_cfdis = 0.0
+                                number_of_documents = numero_cfdis ### Total Descargado en el SAT
+                                _logger.info('\n################ Solicitud Vencida, ya no se podra descarga. Crea una nueva solicitud pero cambia el periodo (fechas) de la misma ( %s ).....' % rec.name)
+                                status_solicitud = status_solicitud+", SAT - preparando archivo."
+                                no_data = True
+                        # --- #  
                         else:
                             download_pending = False
                             status_solicitud = 'No se encontró la información'
