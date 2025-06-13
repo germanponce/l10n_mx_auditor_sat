@@ -634,9 +634,22 @@ class AccountCFDIMultiDownload(models.TransientModel):
                         tipo_solicitud='CFDI'  # Agregar tipo_solicitud explícitamente
                     )
                 else:  # recibidos
+                    # token, 
+                    # rfc_solicitante, 
+                    # fecha_inicial, 
+                    # fecha_final,
+                    # rfc_emisor=None, 
+                    # rfc_receptor=None, 
+                    # tipo_solicitud='CFDI',
+                    # tipo_comprobante=None, 
+                    # estado_comprobante=None,
+                    # rfc_a_cuenta_terceros=None, 
+                    # complemento=None, 
+                    # uuid=None
                     _logger.info("\n############### Solicitando CFDI Recibidos >>> ")
                     result = descarga.solicitar_descarga(
-                        token, rfc_solicitante, fecha_inicial, fecha_final, 
+                        token, rfc_solicitante, fecha_inicial, fecha_final,
+                        rfc_emisor=None,
                         rfc_receptor=rfc_receptor,
                         tipo_solicitud='CFDI'  # Agregar tipo_solicitud explícitamente
                     )
