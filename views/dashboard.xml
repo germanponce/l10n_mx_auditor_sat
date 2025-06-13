@@ -23,6 +23,7 @@
                 <field name="status_solicitud" />
                 <field name="download_pending" />
                 <field name="no_data" />
+                <field name="company_id" />
                     <templates>
                         <t t-name="kanban-box">
                             <div t-attf-class="#{kanban_color(record.color.raw_value)} oe_kanban_global_click o_has_icon">
@@ -131,6 +132,16 @@
                                         </span>
                                     </div>
                                 </div>
+                                <div class="row mt8">
+                                    <div class="col-6 text-muted">
+                                        <span>Compañia: </span>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="float-right text-right">
+                                            <t t-esc="record.company_id.value"/>
+                                        </span>
+                                    </div>
+                                </div>
                                 <center>
                                     <button type="object"  name="action_download">Descargar ZIP</button>
                                 </center>
@@ -201,6 +212,7 @@
                         
                         <field name="periodo" readonly="1"/>
                         <field name="download_type" readonly="1"/>
+                        <field name="company_id" readonly="1"/>
                     </group>
                     <group name="zip">
                         <field name="download_file" invisible="1"/>

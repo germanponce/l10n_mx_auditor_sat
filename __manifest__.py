@@ -19,6 +19,7 @@ Con este módulo puede realizar lo siguiente:
                     'base_setup', 
                     'product', 
                     'portal', 
+                    "l10n_mx_einvoice",
                 ],
     "external_dependencies": {
                     "python" : ["cfdiclient", "suds-jurko"]

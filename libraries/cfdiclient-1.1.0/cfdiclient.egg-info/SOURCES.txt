@@ -1,0 +1,13 @@
+README.md
+setup.py
+cfdiclient/__init__.py
+cfdiclient/autenticacion.py
+cfdiclient/descargamasiva.py
+cfdiclient/fiel.py
+cfdiclient/solicitadescarga.py
+cfdiclient/verificasolicituddescarga.py
+cfdiclient.egg-info/PKG-INFO
+cfdiclient.egg-info/SOURCES.txt
+cfdiclient.egg-info/dependency_links.txt
+cfdiclient.egg-info/requires.txt
+cfdiclient.egg-info/top_level.txt

@@ -23,6 +23,7 @@
                                         <div class="row mt16">
                                             <label for="certificate_file" class="col-lg-3 o_light_label"/>
                                             <field name="certificate_file" />
+                                            <newline/>
                                             <label for="certificate_key_file" class="col-lg-3 o_light_label"/>
                                             <field name="certificate_key_file" />
                                         </div>
