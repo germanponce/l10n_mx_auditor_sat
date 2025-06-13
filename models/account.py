@@ -614,7 +614,7 @@ class AccountCFDIMultiDownload(models.TransientModel):
             #### Cambios 2025 ######
 
             if rec.download_type_prev == 'emitidos':
-                descarga = SolicitaDescarga(fiel)
+                descarga = SolicitaDescargaEmitidos(fiel)
             elif rec.download_type_prev == 'recibidos':
                 descarga = SolicitaDescargaRecibidos(fiel)
             # ---- #
