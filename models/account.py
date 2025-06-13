@@ -611,21 +611,54 @@ class AccountCFDIMultiDownload(models.TransientModel):
             _logger.info("\n################ rfc_receptor %s " % rfc_receptor)
 
             ### Instancia Libreria Encargada de Solicitar Descarga ###
-            descarga = SolicitaDescarga(fiel)
-            
+            #### Cambios 2025 ######
+
+            if rec.download_type_prev == 'emitidos':
+                descarga = SolicitaDescarga(fiel)
+            elif rec.download_type_prev == 'recibidos':
+                descarga = SolicitaDescargaRecibidos(fiel)
+            # ---- #
+
             result = {}
             return_data_solicitud = {}
             # {'mensaje': 'Solicitud Aceptada', 'cod_estatus': '5000', 
             #  'id_solicitud': 'be2a3e76-684f-416a-afdf-0f9378c346be'}
-            if download_type == 'emitidos':
-                _logger.info( "\n############### CFDI Emitidos >>> ")
-                result = descarga.solicitar_descarga(token, rfc_solicitante, fecha_inicial, fecha_final, rfc_emisor=rfc_emisor)
-                _logger.info(result)
-            # Recibidos
-            else:
-                _logger.info( "\n############### CFDI Recibidos >>> ")
-                result = descarga.solicitar_descarga(token, rfc_solicitante, fecha_inicial, fecha_final, rfc_receptor=rfc_receptor)
-                _logger.info(result)
+            #### Cambios 2025 ######
+
+            try:
+                # Realizar la solicitud según el tipo
+                if download_type == 'emitidos':
+                    _logger.info("\n############### Solicitando CFDI Emitidos >>> ")
+                    result = descarga.solicitar_descarga(
+                        token, rfc_solicitante, fecha_inicial, fecha_final, 
+                        rfc_emisor=rfc_emisor,
+                        tipo_solicitud='CFDI'  # Agregar tipo_solicitud explícitamente
+                    )
+                else:  # recibidos
+                    _logger.info("\n############### Solicitando CFDI Recibidos >>> ")
+                    result = descarga.solicitar_descarga(
+                        token, rfc_solicitante, fecha_inicial, fecha_final, 
+                        rfc_receptor=rfc_receptor,
+                        tipo_solicitud='CFDI'  # Agregar tipo_solicitud explícitamente
+                    )
+                
+                _logger.info(f"\n############### Resultado de solicitud: {result}")
+                
+            except Exception as e:
+                _logger.error(f"\n############### Error en solicitud de descarga: {e}")
+                return {'error': f'Error en solicitud de descarga: {str(e)}'}
+            # ---- #
+
+            # if download_type == 'emitidos':
+            #     _logger.info( "\n############### CFDI Emitidos >>> ")
+            #     result = descarga.solicitar_descarga(token, rfc_solicitante, fecha_inicial, fecha_final, rfc_emisor=rfc_emisor)
+            #     _logger.info(result)
+            # # Recibidos
+            # else:
+            #     _logger.info( "\n############### CFDI Recibidos >>> ")
+            #     result = descarga.solicitar_descarga(token, rfc_solicitante, fecha_inicial, fecha_final, rfc_receptor=rfc_receptor)
+            #     _logger.info(result)
+
             #raise ValidationError("Pausa2")
             if result:
                 id_solicitud = ""
