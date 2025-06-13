@@ -658,6 +658,7 @@ class AccountCFDIMultiDownload(models.TransientModel):
                         rfc_emisor=None,  # Para recibidos, no especificar emisor específico
                         rfc_receptor=None,
                         tipo_solicitud='CFDI',
+                        tipo_comprobante='I',
                         estado_comprobante='Vigente'
                     )
                 
