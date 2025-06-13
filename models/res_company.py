@@ -1,15 +1,26 @@
 # -*- encoding: utf-8 -*-
 
-from odoo import api, fields, models, _, tools
+from odoo import _, api, fields, models, tools
 from odoo.exceptions import UserError, RedirectWarning, ValidationError
 from pytz import timezone
 import pytz
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, DEFAULT_SERVER_DATE_FORMAT
 import base64
+import subprocess
+import tempfile
+from datetime import datetime
 import ssl
-from OpenSSL import crypto
+try:
+    from OpenSSL import crypto
+except ImportError:
+    _logger.warning('OpenSSL library not found. If you plan to use l10n_mx_edi, please install the library from https://pypi.python.org/pypi/pyOpenSSL')
+
 import logging
 _logger = logging.getLogger(__name__)
+
+
+KEY_TO_PEM_CMD = 'openssl pkcs8 -in %s -inform der -outform pem -out %s -passin file:%s'
+CER_TO_PFX_CMD = 'openssl pkcs12 -export -out %s -inkey %s -in %s -passout pass:%s'
 
 
 class ResCompany(models.Model):
@@ -62,7 +73,7 @@ class AccountConfigSettings(models.TransientModel):
     @api.onchange('certificate_password')
     def _onchange_certificate_password(self):
         warning = {}
-        certificate_lib = self.env['facturae.certificate.library']
+        #certificate_lib = self.env['facturae.certificate.library']
         certificate_file_pem = False
         certificate_key_file_pem = False
         error_in_decode = False
@@ -74,12 +85,12 @@ class AccountConfigSettings(models.TransientModel):
         self.certificate_pfx_file = False    
         if cer_der_b64str and key_der_b64str and password:
             cer_pem_b64 = ssl.DER_cert_to_PEM_cert(base64.decodebytes(self.certificate_file)).encode('UTF-8')
-            key_pem_b64 = certificate_lib.convert_key_cer_to_pem(base64.decodebytes(self.certificate_key_file),
+            key_pem_b64 = self.convert_key_cer_to_pem(base64.decodebytes(self.certificate_key_file),
                                                                 str.encode(self.certificate_password))
             if not key_pem_b64:
-                key_pem_b64 = certificate_lib.convert_key_cer_to_pem(base64.decodebytes(self.certificate_key_file),
+                key_pem_b64 = self.convert_key_cer_to_pem(base64.decodebytes(self.certificate_key_file),
                                                                 self.certificate_password+ ' ')
-            pfx_pem_b64 = certificate_lib.convert_cer_to_pfx(cer_pem_b64, key_pem_b64,
+            pfx_pem_b64 = self.convert_cer_to_pfx(cer_pem_b64, key_pem_b64,
                                                              str.encode(self.certificate_password))
             cert = crypto.load_certificate(crypto.FILETYPE_PEM, cer_pem_b64)
             x = hex(cert.get_serial_number())
@@ -95,3 +106,38 @@ class AccountConfigSettings(models.TransientModel):
         else:
             return {}
         return {'warning': warning}
+    
+    
+    def convert_key_cer_to_pem(self, key, password):
+        with tempfile.NamedTemporaryFile('wb', suffix='.key', prefix='mx_einvoice.') as key_file, \
+             tempfile.NamedTemporaryFile('wb', suffix='.txt', prefix='mx_einvoice.') as pwd_file, \
+             tempfile.NamedTemporaryFile('rb', suffix='.key', prefix='mx_einvoice.') as keypem_file:
+            key_file.write(key)
+            key_file.flush()
+            pwd_file.write(password)
+            pwd_file.flush()
+            subprocess.call((KEY_TO_PEM_CMD % (key_file.name, keypem_file.name, pwd_file.name)).split())
+            key_pem = keypem_file.read()
+        return key_pem
+
+
+    def convert_cer_to_pfx(self, cer_pem, key_pem, password):
+        ### Corrección de la generación del Archivo PFX el password lo recibe como bytes string allpi radicaba el error - German P.####
+        password =  password.decode("utf-8") 
+        with tempfile.NamedTemporaryFile('wb', suffix='.cer_pem', prefix='mx_einvoice.') as cer_pem_file, \
+             tempfile.NamedTemporaryFile('wb', suffix='.key_pem', prefix='mx_einvoice.') as key_pem_file, \
+             tempfile.NamedTemporaryFile('rb', suffix='.pfx', prefix='mx_einvoice.') as pfx_file:
+            cer_pem_file.write(cer_pem)
+            cer_pem_file.flush()
+            key_pem_file.write(key_pem)
+            key_pem_file.flush()
+            ##print(CER_TO_PFX_CMD % (pfx_file.name, 
+            #                                   key_pem_file.name, 
+            #                                   cer_pem_file.name, 
+            #                                   password))
+            subprocess.call((CER_TO_PFX_CMD % (pfx_file.name, 
+                                               key_pem_file.name, 
+                                               cer_pem_file.name, 
+                                               password)).split())
+            pfx_pem = pfx_file.read()
+        return pfx_pem

@@ -15,11 +15,11 @@ Con este módulo puede realizar lo siguiente:
     "website" : "http://www.argil.mx",
     "license" : "AGPL-3",
     "depends" : [
-                    "account",
+                    "account_accountant",
                     'base_setup', 
                     'product', 
-                    'portal', 
-                    "l10n_mx_einvoice",
+                    #'portal', 
+                    "l10n_mx_edi",
                 ],
     "external_dependencies": {
                     "python" : ["cfdiclient", "suds-jurko"]

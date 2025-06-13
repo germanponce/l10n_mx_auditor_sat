@@ -30,7 +30,6 @@ _logger = logging.getLogger(__name__)
 import cfdiclient
 from cfdiclient import Autenticacion
 from cfdiclient import Fiel
-
 #### Cambios 2025 ######
 from cfdiclient import SolicitaDescargaEmitidos
 from cfdiclient import SolicitaDescargaRecibidos
@@ -87,6 +86,7 @@ class CFDIAccountDashboardManager(models.Model):
     package_pending = fields.Char('Paquetes Pendientes', size=256)
     sequence = fields.Integer('Secuencia', default=100)
     company_id = fields.Many2one('res.company', 'Empresa', default=_get_current_company)
+
     
     def write(self, vals):
         for rec in self:
@@ -330,12 +330,15 @@ class CFDIAccountDashboardManager(models.Model):
                             rec.write({'color': 11,'sequence': 100+rec.id})
                             return {'type': 'ir.actions.act_window_close'}
                         else:
-                            rec.write({'is_favorite': False})
-                            return {
-                                     'type': 'ir.actions.act_url',
-                                     'url': file_url,
-                                     'target': 'new'
-                                    } 
+                            if rec.file:
+                                rec.write({'is_favorite': False})
+                                return {
+                                         'type': 'ir.actions.act_url',
+                                         'url': file_url,
+                                         'target': 'new'
+                                        } 
+                            else:
+                                return {'type': 'ir.actions.act_window_close'}
                     else:
                         return {
                                  'name': 'Resultado de Consutla SAT',
@@ -351,11 +354,16 @@ class CFDIAccountDashboardManager(models.Model):
             if rec.is_favorite:
                 rec.write({'is_favorite': False})
             ### Si Desde un Inicio todo fue correcto regresar el Resultado ###
-            return {
-                    'type': 'ir.actions.act_url',
-                    'url': file_url,
-                    'target': 'new'
-            }
+            if rec.file:
+                rec.write({'is_favorite': False})
+                return {
+                         'type': 'ir.actions.act_url',
+                         'url': file_url,
+                         'target': 'new'
+                        } 
+            else:
+                return {'type': 'ir.actions.act_window_close'}
+
 
     #### Consulta Autmatica de Descargas
     @api.model
@@ -386,7 +394,7 @@ class CFDIAccountDashboardManager(models.Model):
             time_to_download = 7200 # Segundos = 2 Horas
             if difference_between_request >= time_to_download:
                 ### Si la compañia esta marcada con consultas automatizadas ####
-                if consulta.company_id.download_automatically:
+                if consulta.company_id.download_automatically
                     ### Ejecutamos el metodo de consulta sin descargar paquetes del navegador ###
                     _logger.info("\n####################### Descargando la Solicitud con ID Odoo %s " % consulta.id)
                     _logger.info("\n####################### ID Solicitud SAT %s " % consulta.id_solicitud)
@@ -405,8 +413,8 @@ class CFDIAccountDashboardManager(models.Model):
         account_invoice_obj = self.env['account.move']
         for rec in self:
             _logger.info("\n:::::::::::::::::::::::::: Consultando los Documentos en Odoo >>>>> ")
-            date_start = str(rec.date_start)[0:19]
-            date_stop = str(rec.date_stop)[0:19]
+            date_start = str(rec.date_start)[0:10]
+            date_stop = str(rec.date_stop)[0:10]
             number_of_invoices = 0
             number_of_nc_invoices = 0
             number_of_supplier_inv = 0
@@ -416,23 +424,20 @@ class CFDIAccountDashboardManager(models.Model):
             ######### Facturas de Cliente ##########
             number_of_invoices = account_invoice_obj.search_count([('move_type','=','out_invoice'),
                                                                    ('state','in',('open','paid')),
-                                                                   ('cfdi_folio_fiscal','!=',False),
-                                                                   ('invoice_datetime','>=',date_start),
-                                                                   ('invoice_datetime','<=',date_stop)])
+                                                                   ('invoice_date','>=',date_start),
+                                                                   ('invoice_date','<=',date_stop)])
             rec.number_of_invoices = number_of_invoices
             ######### Notas de Credito de Cliente ##########
             number_of_nc_invoices = account_invoice_obj.search_count([('move_type','=','out_refund'),
                                                                    ('state','in',('open','paid')),
-                                                                   ('cfdi_folio_fiscal','!=',False),
-                                                                   ('invoice_datetime','>=',date_start),
-                                                                   ('invoice_datetime','<=',date_stop)])
+                                                                   ('invoice_date','>=',date_start),
+                                                                   ('invoice_date','<=',date_stop)])
             rec.number_of_nc_invoices = number_of_nc_invoices
             ######### Pagos ##########
-            number_of_payments = payment_obj.search_count([('generar_cfdi','=',True),
-                                                                   ('state','in',('posted','reconciled','sent')),
-                                                                   ('cfdi_folio_fiscal','!=',False),
-                                                                   ('payment_datetime_reception','>=',date_start),
-                                                                   ('payment_datetime_reception','<=',date_stop)])
+            number_of_payments = payment_obj.search_count([
+                                                           ('state','in',('posted','reconciled','sent')),
+                                                           ('date','>=',date_start),
+                                                           ('date','<=',date_stop)])
             rec.number_of_payments = number_of_payments
             ######### Facturas de Proveedor ##########
             date_start_supl = str(date_start)[0:10]
@@ -468,13 +473,26 @@ class AccountCFDIMultiDownload(models.TransientModel):
     download_type_prev = fields.Selection([('emitidos','CFDI Emitidos'),('recibidos','CFDI Recibidos')], 'Tipo Descarga Prev.')
 
     company_id = fields.Many2one('res.company', 'Empresa', default=_get_current_company)
+    
+    def b64str_to_tempfile(self, b64_str=None, file_suffix=None, file_prefix=None):
+        """
+        @param b64_str : Text in Base_64 format for add in the file
+        @param file_suffix : Sufix of the file
+        @param file_prefix : Name of file in TempFile
+        """
+        (fileno, fname) = tempfile.mkstemp(file_suffix, file_prefix)
+        f = open(fname, 'wb')
+        f.write(base64.decodebytes(b64_str or str.encode('')))
+        f.close()
+        os.close(fileno)
+        return fname
 
     def zip_b64_str_to_physical_file(self, b64_str, file_extension, prefix='data'):
         _logger.info("\n####################### zip_b64_str_to_physical_file >>>>>>>>>>> ")
         _logger.info("\n####################### file_extension %s " % file_extension)
         _logger.info("\n####################### prefix %s " % prefix)
-        certificate_lib = self.env['facturae.certificate.library']
-        b64_temporal_route = certificate_lib.b64str_to_tempfile(base64.encodebytes(b''), 
+        #certificate_lib = self.env['facturae.certificate.library']
+        b64_temporal_route = self.b64str_to_tempfile(base64.encodestring(b''), 
                                                           file_suffix='.%s' % file_extension, 
                                                           file_prefix='odoo__%s__' % prefix)
         _logger.info("\n### b64_temporal_route %s " % b64_temporal_route)
@@ -491,8 +509,8 @@ class AccountCFDIMultiDownload(models.TransientModel):
         _logger.info("\n####################### b64_str_to_physical_file >>>>>>>>>>> ")
         _logger.info("\n####################### file_extension %s " % file_extension)
         _logger.info("\n####################### prefix %s " % prefix)
-        certificate_lib = self.env['facturae.certificate.library']
-        b64_temporal_route = certificate_lib.b64str_to_tempfile(base64.encodebytes(b''), 
+        #certificate_lib = self.env['facturae.certificate.library']
+        b64_temporal_route = self.b64str_to_tempfile(base64.encodebytes(b''), 
                                                           file_suffix='.%s' % file_extension, 
                                                           file_prefix='odoo__%s__' % prefix)
         _logger.info("\n### b64_temporal_route %s " % b64_temporal_route)
@@ -624,7 +642,6 @@ class AccountCFDIMultiDownload(models.TransientModel):
             # {'mensaje': 'Solicitud Aceptada', 'cod_estatus': '5000', 
             #  'id_solicitud': 'be2a3e76-684f-416a-afdf-0f9378c346be'}
             #### Cambios 2025 ######
-
             try:
                 # Realizar la solicitud según el tipo
                 if download_type == 'emitidos':
@@ -646,9 +663,13 @@ class AccountCFDIMultiDownload(models.TransientModel):
                 
             except Exception as e:
                 _logger.error(f"\n############### Error en solicitud de descarga: {e}")
-                return {'error': f'Error en solicitud de descarga: {str(e)}'}
+                return {
+                        'error': f'Error en solicitud de descarga: {str(e)}',
+                        'id_solicitud': '',
+                        'codigo_estado_solicitud': '',
+                        'estado_solicitud': '4',
+                        }
             # ---- #
-
             # if download_type == 'emitidos':
             #     _logger.info( "\n############### CFDI Emitidos >>> ")
             #     result = descarga.solicitar_descarga(token, rfc_solicitante, fecha_inicial, fecha_final, rfc_emisor=rfc_emisor)
@@ -658,7 +679,6 @@ class AccountCFDIMultiDownload(models.TransientModel):
             #     _logger.info( "\n############### CFDI Recibidos >>> ")
             #     result = descarga.solicitar_descarga(token, rfc_solicitante, fecha_inicial, fecha_final, rfc_receptor=rfc_receptor)
             #     _logger.info(result)
-
             #raise ValidationError("Pausa2")
             if result:
                 id_solicitud = ""
@@ -680,7 +700,7 @@ class AccountCFDIMultiDownload(models.TransientModel):
     def get_download_check_request(self, file_globals, id_solicitud):
         _logger.info("\n:::::::::::::::::::::::::: Verificando  una Solicitud de Descarga")
         _logger.info("\n:::::::::::::::::::::::::: ID Solicitud %s  " % id_solicitud)
-        company_user = self.env.user.company_id
+        company_user = self.company_id
         token = file_globals['token']
         rfc_solicitante = company_user.vat
 
@@ -739,7 +759,7 @@ class AccountCFDIMultiDownload(models.TransientModel):
             datas_fname = "Documentos XML %s " % date_act+".zip"
             # rec.write({
             #         'datas_fname':datas_fname,
-            #         'file':base64.encodebytes(b'')
+            #         'file':base64.encodestring(b'')
             #     })
             user_id = self.env.user.id
             number_of_documents = 0.0
@@ -755,7 +775,7 @@ class AccountCFDIMultiDownload(models.TransientModel):
             cod_estatus = data_solicitud['cod_estatus']
             id_solicitud = ""
             status_solicitud = ""
-            paquete_b64 = base64.encodebytes(b'')
+            paquete_b64 = base64.encodestring(b'')
             download_pending = True
             no_data = False
             file_ready_for_download = False
@@ -833,7 +853,6 @@ class AccountCFDIMultiDownload(models.TransientModel):
                             _logger.info('\n################ Solicitud Aceptada, pero aun no lista para Descarga ( %s ).....' % rec.name)
                             status_solicitud = status_solicitud+", SAT - preparando archivo."
                             no_data = True
-                            
                         #### Cambios 2025 ######
                         elif estado_solicitud == '4':
                                 download_pending = True
@@ -908,11 +927,23 @@ class AccountCFDIMultiDownload(models.TransientModel):
             
             if no_data == False:
                 manager_br.compute_documents_from_period()
-                return {
-                        'type': 'ir.actions.act_url',
-                        'url': file_url,
-                        'target': 'new'
-                    }
+                if manager_br.file:
+                    manager_br.write({'is_favorite': False})
+                    return {
+                             'type': 'ir.actions.act_url',
+                             'url': file_url,
+                             'target': 'new'
+                            } 
+                else:
+                    return {
+                            'name': 'Resultado de Consutla SAT',
+                            'view_mode': 'form',
+                            'view_id': self.env.ref('l10n_mx_auditor_sat.cfdi_account_dashboard_manager_form').id,
+                            'res_model': 'cfdi.account.dashboard.manager',
+                            'context': "{}", # self.env.context
+                            'type': 'ir.actions.act_window',
+                            'res_id': manager_br.id,
+                        }
             else:
                 return {
                             'name': 'Resultado de Consutla SAT',

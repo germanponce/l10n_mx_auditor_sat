@@ -209,7 +209,6 @@
                 </group>
                 <group name="periodos_zip">
                     <group name="periodo_type">
-                        
                         <field name="periodo" readonly="1"/>
                         <field name="download_type" readonly="1"/>
                         <field name="company_id" readonly="1"/>
