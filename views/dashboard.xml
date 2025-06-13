@@ -217,12 +217,12 @@
                     <group name="zip">
                         <field name="download_file" invisible="1"/>
                         <field name="datas_fname" invisible="1"/>
-                        <field name="file" readonly="1" filename="datas_fname" attrs="{'invisible':[('download_file','=',False)]}"/>
+                        <field name="file" readonly="1" filename="datas_fname" invisible="download_file == False"/>
                     </group>
                     
                 </group>
                 <group name="package_pendings">
-                    <field name="package_pending" readonly="1" attrs="{'invisible':[('download_pending','=',False)]}"/>
+                    <field name="package_pending" readonly="1" invisible="download_pending == False"/>
                 </group>
                  <p><strong>Nota: </strong>Los datos como # Facturas C., # Notas C., # Facturas P. y # Pagos, estan relacionados con documentos con informacion fiscal generados dentro del Sistema Odoo, sin contar los documentos cancelados.</p>
               </sheet>
