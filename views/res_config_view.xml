@@ -89,5 +89,25 @@
                 </xpath>
             </field>
         </record>
+
+    <record id="auditor_descarga_sat_fiel_conf_act" model="ir.actions.act_window">
+        <field name="name">Configuración</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'l10n_mx_auditor_sat'}</field>
+    </record>
+
+    <menuitem id="auditor_descarga_sat_fiel_conf_root_menu"
+        name="Ajustes"
+        parent="account_cfdi_auditor_root" sequence="100"/>
+
+    <menuitem id="auditor_descarga_sat_fiel_conf_menu"
+        name="Configuración"
+        parent="auditor_descarga_sat_fiel_conf_root_menu"
+        sequence="0"
+        action="auditor_descarga_sat_fiel_conf_act" />
+
     </data>
 </odoo>
