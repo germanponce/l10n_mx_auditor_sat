@@ -646,7 +646,12 @@ class AccountCFDIMultiDownload(models.TransientModel):
                 
             except Exception as e:
                 _logger.error(f"\n############### Error en solicitud de descarga: {e}")
-                return {'error': f'Error en solicitud de descarga: {str(e)}'}
+                return {
+                        'error': f'Error en solicitud de descarga: {str(e)}',
+                        'id_solicitud': '',
+                        'codigo_estado_solicitud': '',
+                        'estado_solicitud': '4',
+                        }
             # ---- #
 
             # if download_type == 'emitidos':
@@ -833,7 +838,7 @@ class AccountCFDIMultiDownload(models.TransientModel):
                             _logger.info('\n################ Solicitud Aceptada, pero aun no lista para Descarga ( %s ).....' % rec.name)
                             status_solicitud = status_solicitud+", SAT - preparando archivo."
                             no_data = True
-                            
+
                         #### Cambios 2025 ######
                         elif estado_solicitud == '4':
                                 download_pending = True
