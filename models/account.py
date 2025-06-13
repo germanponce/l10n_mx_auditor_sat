@@ -474,7 +474,7 @@ class AccountCFDIMultiDownload(models.TransientModel):
         _logger.info("\n####################### file_extension %s " % file_extension)
         _logger.info("\n####################### prefix %s " % prefix)
         certificate_lib = self.env['facturae.certificate.library']
-        b64_temporal_route = certificate_lib.b64str_to_tempfile(base64.encodestring(b''), 
+        b64_temporal_route = certificate_lib.b64str_to_tempfile(base64.encodebytes(b''), 
                                                           file_suffix='.%s' % file_extension, 
                                                           file_prefix='odoo__%s__' % prefix)
         _logger.info("\n### b64_temporal_route %s " % b64_temporal_route)
@@ -739,7 +739,7 @@ class AccountCFDIMultiDownload(models.TransientModel):
             datas_fname = "Documentos XML %s " % date_act+".zip"
             # rec.write({
             #         'datas_fname':datas_fname,
-            #         'file':base64.encodestring(b'')
+            #         'file':base64.encodebytes(b'')
             #     })
             user_id = self.env.user.id
             number_of_documents = 0.0
@@ -755,7 +755,7 @@ class AccountCFDIMultiDownload(models.TransientModel):
             cod_estatus = data_solicitud['cod_estatus']
             id_solicitud = ""
             status_solicitud = ""
-            paquete_b64 = base64.encodestring(b'')
+            paquete_b64 = base64.encodebytes(b'')
             download_pending = True
             no_data = False
             file_ready_for_download = False
