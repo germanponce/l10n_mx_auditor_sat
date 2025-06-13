@@ -655,7 +655,7 @@ class AccountCFDIMultiDownload(models.TransientModel):
                         fecha_inicial=fecha_inicial,
                         fecha_final=fecha_final,
                         rfc_emisor=None,  # Para recibidos, no especificar emisor específico
-                        rfc_receptor=rfc_receptor,
+                        rfc_receptor=None,
                         tipo_solicitud='CFDI'
                     )
                 
