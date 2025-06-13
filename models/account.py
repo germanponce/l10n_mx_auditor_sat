@@ -28,12 +28,14 @@ _logger = logging.getLogger(__name__)
 
 ### libreria de conexion con el SAT ###
 import cfdiclient
-from cfdiclient import Autenticacion
-from cfdiclient import Fiel
-from cfdiclient import SolicitaDescarga
-from cfdiclient import Autenticacion
-from cfdiclient import VerificaSolicitudDescarga
-from cfdiclient import DescargaMasiva
+from cfdiclient import (
+    Autenticacion,
+    Fiel,
+    SolicitaDescarga,
+    VerificaSolicitudDescarga,
+    DescargaMasiva
+)
+CFDICLIENT_AVAILABLE = True
 
 ### Libreria Prueba Consulta SAT - Alternativa y Manual Incluye los sig. Archivos ###
 # from . import Download
