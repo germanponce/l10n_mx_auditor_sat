@@ -7,7 +7,7 @@
             <field name="model">res.config.settings</field>
             <field name="inherit_id" ref="base.res_config_settings_view_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//div[hasclass('settings')]" position="inside">
+                <xpath expr="//form" position="inside">
                     <div class="app_settings_block" data-string="Auditor SAT" string="Auditor SAT" data-key="l10n_mx_auditor_sat" 
                          name="l10n_mx_auditor_sat" groups="account.group_account_manager">
                         <h2>Configuracion Descarga Masiva SAT</h2>
@@ -89,5 +89,25 @@
                 </xpath>
             </field>
         </record>
+
+    <record id="auditor_descarga_sat_fiel_conf_act" model="ir.actions.act_window">
+        <field name="name">Configuración</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'l10n_mx_auditor_sat'}</field>
+    </record>
+
+    <menuitem id="auditor_descarga_sat_fiel_conf_root_menu"
+        name="Ajustes"
+        parent="account_cfdi_auditor_root" sequence="100"/>
+
+    <menuitem id="auditor_descarga_sat_fiel_conf_menu"
+        name="Configuración"
+        parent="auditor_descarga_sat_fiel_conf_root_menu"
+        sequence="0"
+        action="auditor_descarga_sat_fiel_conf_act" />
+        
     </data>
 </odoo>
