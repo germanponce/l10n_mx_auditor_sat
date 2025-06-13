@@ -30,7 +30,6 @@ _logger = logging.getLogger(__name__)
 import cfdiclient
 from cfdiclient import Autenticacion
 from cfdiclient import Fiel
-
 #### Cambios 2025 ######
 from cfdiclient import SolicitaDescargaEmitidos
 from cfdiclient import SolicitaDescargaRecibidos
@@ -623,8 +622,8 @@ class AccountCFDIMultiDownload(models.TransientModel):
             return_data_solicitud = {}
             # {'mensaje': 'Solicitud Aceptada', 'cod_estatus': '5000', 
             #  'id_solicitud': 'be2a3e76-684f-416a-afdf-0f9378c346be'}
+            
             #### Cambios 2025 ######
-
             try:
                 # Realizar la solicitud según el tipo
                 if download_type == 'emitidos':
